@@ -135,6 +135,7 @@ public class ContainerMediaChunk extends BaseMediaChunk {
         nextLoadPosition = input.getPosition() - dataSpec.position;
       }
     } finally {
+      onLoadChunkReadCompleted();
       DataSourceUtil.closeQuietly(dataSource);
     }
     loadCompleted = !loadCanceled;
@@ -172,4 +173,28 @@ public class ContainerMediaChunk extends BaseMediaChunk {
           tileStartTimeUs, /* flags= */ 0, /* size= */ 0, /* offset= */ 0, /* cryptoData= */ null);
     }
   }
+
+  /**
+   * Returns a load was canceled due to {@link #cancelLoad()} being called.
+   *
+   * @return true if canceled, false if otherwise
+   */
+  public final boolean isLoadCanceled() {
+    return loadCanceled;
+  }
+
+  /**
+   * Returns the next load position of the chunk load.
+   *
+   * @return The next position (byte offset) in the stream to load
+   */
+  public final long getNextLoadPosition() {
+    return nextLoadPosition;
+  }
+
+  /**
+   * Callback method after a {@link #load()} is finished but prior to closing the backing
+   * {@link DataSource}
+   */
+  protected void onLoadChunkReadCompleted() {}
 }
